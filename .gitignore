@@ -1,3 +1,6 @@
+# WordPress Plugin - Secretary of DeCourse Chatbot
+# Combined .gitignore for WordPress plugin development
+
 # WordPress specific
 wp-config.php
 wp-content/uploads/
@@ -10,7 +13,6 @@ wp-content/cache/
 wp-content/cache/supercache/
 
 # WordPress multisite
-wp-content/blogs.dir/
 wp-content/blog-deleted/
 wp-content/blog-inactive/
 wp-content/blog-suspended/
