@@ -1,92 +1,89 @@
-name: Deploy to WordPress
+name: Publish Website
 
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
-  deploy:
+  Publish-Website:
+    name: Publish-Website
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
-      
+      uses: actions/checkout@master
+
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
         php-version: '8.0'
-        
+
     - name: Validate PHP syntax
       run: |
+        echo "🔍 Validating PHP syntax..."
         find . -name "*.php" -exec php -l {} \;
-        
-    - name: Run basic tests
+        echo "✅ PHP syntax validation complete"
+
+    - name: Run plugin tests
       run: |
+        echo "🧪 Running plugin validation tests..."
         php -r "
         // Test basic plugin functionality
         if (file_exists('secretary-chatbot.php')) {
-          echo 'Main plugin file exists\n';
+          echo '✅ Main plugin file exists\n';
         } else {
-          echo 'ERROR: Main plugin file missing\n';
+          echo '❌ ERROR: Main plugin file missing\n';
           exit(1);
         }
-        
+
         if (file_exists('includes/chatbot-logic.php')) {
-          echo 'Chatbot logic file exists\n';
+          echo '✅ Chatbot logic file exists\n';
         } else {
-          echo 'ERROR: Chatbot logic file missing\n';
+          echo '❌ ERROR: Chatbot logic file missing\n';
           exit(1);
         }
-        
+
         if (file_exists('assets/badger.png')) {
-          echo 'Badger avatar exists\n';
+          echo '✅ Badger avatar exists\n';
         } else {
-          echo 'WARNING: Badger avatar missing\n';
+          echo '⚠️  WARNING: Badger avatar missing\n';
         }
-        
-        echo 'Basic validation complete\n';
+
+        if (file_exists('assets/chatbot.js')) {
+          echo '✅ JavaScript file exists\n';
+        } else {
+          echo '❌ ERROR: JavaScript file missing\n';
+          exit(1);
+        }
+
+        if (file_exists('assets/style.css')) {
+          echo '✅ CSS file exists\n';
+        } else {
+          echo '❌ ERROR: CSS file missing\n';
+          exit(1);
+        }
+
+        echo '🎉 Plugin validation complete - ready for deployment!\n';
         "
-        
-    - name: Deploy to WordPress via FTP
-      if: github.ref == 'refs/heads/main'
-      uses: SamKirkland/FTP-Deploy-Action@4.3.3
+
+    - name: Upload the artifact
+      uses: actions/upload-artifact@v4
       with:
-        server: ${{ secrets.FTP_SERVER }}
-        username: ${{ secrets.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        local-dir: ./
-        server-dir: /wp-content/plugins/secretary-chatbot-plugin/
-        exclude: |
-          **/.git*
-          **/.git*/**
-          **/node_modules/**
-          .github/
-          README.md
-          
-    - name: Deploy to WordPress via SFTP (Alternative)
-      if: github.ref == 'refs/heads/main' && secrets.SFTP_HOST
-      uses: wlixcc/SFTP-Deploy-Action@v1.2.4
-      with:
-        server: ${{ secrets.SFTP_HOST }}
-        username: ${{ secrets.SFTP_USERNAME }}
-        password: ${{ secrets.SFTP_PASSWORD }}
-        port: ${{ secrets.SFTP_PORT || 22 }}
-        local_path: './*'
-        remote_path: '/wp-content/plugins/secretary-chatbot-plugin/'
-        
-    - name: Notify deployment success
-      if: success()
+        name: wpcom
+        path: |
+          .
+          !.git*
+          !.github/
+          !README.md
+          !SETUP-INSTRUCTIONS.md
+          !deployment-guide.md
+          !*.md
+        retention-days: 1
+
+    - name: Deployment notification
       run: |
-        echo "✅ Deployment successful!"
-        echo "Plugin deployed to WordPress site"
-        echo "Check your WordPress admin to activate/test the plugin"
-        
-    - name: Notify deployment failure
-      if: failure()
-      run: |
-        echo "❌ Deployment failed!"
-        echo "Check the logs above for error details"
-        echo "Verify your FTP/SFTP credentials in repository secrets"
+        echo "🚀 Plugin packaged for WordPress.com deployment!"
+        echo "📦 Artifact created with name: wpcom"
+        echo "🎯 Ready to deploy to your WordPress.com site"
+        echo "✅ Check your WordPress.com admin to see the deployed plugin"
