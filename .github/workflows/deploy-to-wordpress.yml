@@ -2,7 +2,8 @@ name: Publish Website
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -17,33 +18,44 @@ jobs:
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '8.0'
+        php-version: '8.1'
 
     - name: Validate PHP syntax
       run: |
-        echo "🔍 Validating PHP syntax..."
+        echo "🔍 Validating PHP syntax for WordPress plugin..."
         find . -name "*.php" -exec php -l {} \;
         echo "✅ PHP syntax validation complete"
 
-    - name: Run plugin tests
+    - name: Run plugin validation tests
       run: |
-        echo "🧪 Running plugin validation tests..."
+        echo "🧪 Running Secretary of DeCourse plugin validation..."
         php -r "
-        // Test basic plugin functionality
+        \$errors = 0;
+
+        // Check main plugin file
         if (file_exists('secretary-chatbot.php')) {
-          echo '✅ Main plugin file exists\n';
+          echo '✅ Main plugin file exists: secretary-chatbot.php\n';
         } else {
-          echo '❌ ERROR: Main plugin file missing\n';
-          exit(1);
+          echo '❌ ERROR: Main plugin file missing: secretary-chatbot.php\n';
+          \$errors++;
         }
 
+        // Check includes directory
         if (file_exists('includes/chatbot-logic.php')) {
           echo '✅ Chatbot logic file exists\n';
         } else {
           echo '❌ ERROR: Chatbot logic file missing\n';
-          exit(1);
+          \$errors++;
         }
 
+        if (file_exists('includes/class-secretary-rest-auth.php')) {
+          echo '✅ REST API class exists\n';
+        } else {
+          echo '❌ ERROR: REST API class missing\n';
+          \$errors++;
+        }
+
+        // Check assets
         if (file_exists('assets/badger.png')) {
           echo '✅ Badger avatar exists\n';
         } else {
@@ -54,17 +66,29 @@ jobs:
           echo '✅ JavaScript file exists\n';
         } else {
           echo '❌ ERROR: JavaScript file missing\n';
-          exit(1);
+          \$errors++;
         }
 
         if (file_exists('assets/style.css')) {
           echo '✅ CSS file exists\n';
         } else {
           echo '❌ ERROR: CSS file missing\n';
-          exit(1);
+          \$errors++;
         }
 
-        echo '🎉 Plugin validation complete - ready for deployment!\n';
+        // Check templates
+        if (file_exists('templates/floating-widget.php')) {
+          echo '✅ Floating widget template exists\n';
+        } else {
+          echo '⚠️  WARNING: Floating widget template missing\n';
+        }
+
+        if (\$errors > 0) {
+          echo \"❌ Validation failed with \$errors errors\n\";
+          exit(1);
+        } else {
+          echo '🎉 Plugin validation complete - ready for WordPress.com deployment!\n';
+        }
         "
 
     - name: Upload the artifact
@@ -78,12 +102,20 @@ jobs:
           !README.md
           !SETUP-INSTRUCTIONS.md
           !deployment-guide.md
+          !WORDPRESS-COM-SETUP.md
           !*.md
+          !test-*.php
+          !simple-test.php
         retention-days: 1
 
-    - name: Deployment notification
+    - name: Deployment success notification
       run: |
-        echo "🚀 Plugin packaged for WordPress.com deployment!"
-        echo "📦 Artifact created with name: wpcom"
-        echo "🎯 Ready to deploy to your WordPress.com site"
-        echo "✅ Check your WordPress.com admin to see the deployed plugin"
+        echo "🚀 Secretary of DeCourse plugin packaged successfully!"
+        echo "📦 Artifact 'wpcom' created for WordPress.com deployment"
+        echo "🎯 Plugin files ready for deployment to your WordPress.com site"
+        echo "📋 Next steps:"
+        echo "   1. Connect this repository to your WordPress.com site"
+        echo "   2. Deploy to /wp-content/plugins/secretary-chatbot-plugin/"
+        echo "   3. Activate the plugin in WordPress admin"
+        echo "   4. Test the chatbot functionality"
+        echo "✅ Deployment package ready!"
