@@ -1,0 +1,79 @@
+# WordPress specific
+wp-config.php
+wp-content/uploads/
+wp-content/blogs.dir/
+wp-content/upgrade/
+wp-content/backup-db/
+wp-content/advanced-cache.php
+wp-content/wp-cache-config.php
+wp-content/cache/
+wp-content/cache/supercache/
+
+# WordPress multisite
+wp-content/blogs.dir/
+wp-content/blog-deleted/
+wp-content/blog-inactive/
+wp-content/blog-suspended/
+
+# Logs
+*.log
+debug.log
+error_log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# Node modules (if using build tools)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+dist/
+build/
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Deployment specific
+deploy.php
+deployment-config.json
+
+# Testing
+phpunit.xml
+tests/
+coverage/
+
+# Composer
+vendor/
+composer.lock
+
+# Plugin specific ignores
+secretary-chatbot-plugin.zip
+*.zip
+test-*.php
+simple-test.php
